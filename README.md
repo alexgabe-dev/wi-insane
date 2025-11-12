@@ -1,6 +1,9 @@
-# WI — Auto‑Invite Helper for Turtle WoW
+# WI-INSANE — Auto‑Invite Helper for Turtle WoW
 
 A lightweight, polished auto‑invite addon tailored for the `<INSASE>` guild on Turtle WoW. It listens for configured keywords in whispers and invites eligible players automatically.
+
+<img width="422" height="392" alt="wi-insane" src="https://github.com/user-attachments/assets/af5327a0-9c3b-4b1e-b991-cd9f8311b2a8" />
+
 
 - Original code by Mazli
 - Modernised and maintained by Stabastian
@@ -82,7 +85,7 @@ Open the config: `/wi` or `/wi gui`
 ---
 
 ## Credits
-- Authors: Mazli (original), Stabastian (modernised)
+- Authors: Mazli (original), Stabastian (remix)
 - Guild: `<INSASE>`
 
-Thanks for using WI and keeping invites simple!
+Thanks for using our <INSANE> addon and keeping invites simple!
