@@ -39,33 +39,72 @@ local keywordListText
 local keywordScroll
 local keywordScrollChild
 local miniButton
+local keywordButtons = {}
+local selectedKeywordIndex
 
 local function refreshUI()
     if not uiFrame then return end
     local enabled = (WI_Settings and WI_Settings.enabled) and true or false
     if enableCheckbox then enableCheckbox:SetChecked(enabled) end
-    local list = ""
-    if WI_Settings and type(WI_Settings.keywords) == "table" then
-        local total = table.getn(WI_Settings.keywords)
+
+    local total = (WI_Settings and type(WI_Settings.keywords) == "table") and table.getn(WI_Settings.keywords) or 0
+    local w = keywordScroll and (keywordScroll:GetWidth() - 24) or 200
+    if w < 100 then w = 100 end
+    if keywordScrollChild then keywordScrollChild:SetWidth(w) end
+
+    if total == 0 then
+        if keywordListText then
+            keywordListText:Show()
+            keywordListText:SetWidth(w - 4)
+            keywordListText:SetText("(no keywords)")
+            local h = keywordListText.GetStringHeight and keywordListText:GetStringHeight() or keywordListText:GetHeight()
+            if not h or h < 1 then h = keywordScroll and keywordScroll:GetHeight() or 80 end
+            keywordScrollChild:SetHeight(h + 6)
+        end
+        -- Hide any existing buttons
+        for i, b in pairs(keywordButtons) do b:Hide() end
+    else
+        -- Build/update clickable buttons for each keyword
+        if keywordListText then keywordListText:Hide() end
+        local rowH = 16
         for i = 1, total do
             local kw = WI_Settings.keywords[i]
-            list = list .. i .. ". " .. tostring(kw or "") .. "\n"
+            local b = keywordButtons[i]
+            if not b then
+                b = CreateFrame("Button", "WIKeywordItem" .. i, keywordScrollChild)
+                b:SetWidth(w)
+                b:SetHeight(rowH)
+                b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+                b.text:SetPoint("LEFT", b, "LEFT", 0, 0)
+                keywordButtons[i] = b
+            end
+            b:ClearAllPoints()
+            b:SetPoint("TOPLEFT", keywordScrollChild, "TOPLEFT", 0, -((i - 1) * rowH))
+            b.text:SetText(i .. ". " .. tostring(kw or ""))
+            if selectedKeywordIndex == i then
+                b.text:SetTextColor(1, 0.82, 0) -- highlight selected in gold
+            else
+                b.text:SetTextColor(1, 1, 1)
+            end
+            local idx = i
+            b:SetScript("OnClick", function()
+                selectedKeywordIndex = idx
+                if keywordEditBox then keywordEditBox:SetText(WI_Settings.keywords[idx] or "") end
+                refreshUI()
+            end)
+            b:Show()
         end
-    end
-    if list == "" then list = "(no keywords)" end
-    if keywordListText then
-        keywordListText:SetText(list)
-        if keywordScrollChild and keywordScroll then
-            local w = keywordScroll:GetWidth() - 24
-            if w < 100 then w = 100 end
-            keywordScrollChild:SetWidth(w)
-            keywordListText:SetWidth(w - 4)
-            local h = keywordListText.GetStringHeight and keywordListText:GetStringHeight() or keywordListText:GetHeight()
-            if not h or h < 1 then h = keywordScroll:GetHeight() end
-            keywordScrollChild:SetHeight(h + 6)
-            keywordScroll:SetVerticalScroll(0)
+        -- Hide any extra buttons beyond current total
+        for i = total + 1, table.getn(keywordButtons) do
+            if keywordButtons[i] then keywordButtons[i]:Hide() end
         end
+        local h = total * rowH
+        if keywordScroll then
+            if h < keywordScroll:GetHeight() then h = keywordScroll:GetHeight() end
+        end
+        keywordScrollChild:SetHeight(h + 2)
     end
+    if keywordScroll then keywordScroll:SetVerticalScroll(0) end
 end
 
 local function createUI()
@@ -269,7 +308,7 @@ local function createUI()
 
 |cffffd100Bug report:|r |cff00ff00https://github.com/alexgabe-dev/wi-insane/issues|r
 
-Thanks for using our |cff00ff00<INSASE>|r addon!]])
+Thank you for using our |cff00ff00<INSASE>|r addon!]])
 
 
     local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
