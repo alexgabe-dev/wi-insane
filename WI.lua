@@ -36,6 +36,7 @@ local keywordEditBox
 local enableCheckbox
 local keywordListText
 local miniButton
+local canInvite -- forward declaration so event handler sees local, not global
 
 local function refreshUI()
     if not uiFrame then return end
@@ -330,7 +331,7 @@ end
 
 frame:SetScript("OnEvent", eventHandler)
 
-local function canInvite()
+function canInvite()
     local raidMembers = GetNumRaidMembers and GetNumRaidMembers() or 0
     if raidMembers and raidMembers > 0 then return false, "in raid" end
     local partyMembers = GetNumPartyMembers and GetNumPartyMembers() or 0
