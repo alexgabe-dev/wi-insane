@@ -71,7 +71,7 @@ end
 local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
-    uiFrame:SetWidth(340); uiFrame:SetHeight(320)
+    uiFrame:SetWidth(340); uiFrame:SetHeight(300)
     uiFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     uiFrame:SetFrameStrata("DIALOG")
     uiFrame:EnableMouse(true)
@@ -199,7 +199,7 @@ local function createUI()
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
     closeButton:SetWidth(80); closeButton:SetHeight(22)
-    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 4)
+    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 8)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
 
