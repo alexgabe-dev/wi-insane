@@ -32,6 +32,7 @@ local function hasKeyword(msg)
 end
 
 local uiFrame
+local infoFrame
 local keywordEditBox
 local enableCheckbox
 local keywordListText
@@ -71,7 +72,7 @@ end
 local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
-    uiFrame:SetWidth(345); uiFrame:SetHeight(305)
+    uiFrame:SetWidth(345); uiFrame:SetHeight(310)
     uiFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     uiFrame:SetFrameStrata("DIALOG")
     uiFrame:EnableMouse(true)
@@ -205,6 +206,80 @@ local function createUI()
 
     local closeX = CreateFrame("Button", "WIConfigCloseX", uiFrame, "UIPanelCloseButton")
     closeX:SetPoint("TOPRIGHT", uiFrame, "TOPRIGHT", -4, -4)
+
+    -- Info button next to (left of) the corner X
+    local infoButton = CreateFrame("Button", "WIInfoButton", uiFrame, "UIPanelButtonTemplate")
+    infoButton:SetWidth(22); infoButton:SetHeight(22)
+    infoButton:SetPoint("RIGHT", closeX, "LEFT", -2, 0)
+    infoButton:SetText("i")
+    infoButton:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT")
+        GameTooltip:SetText("Information", 1, 1, 1)
+        GameTooltip:AddLine("Show addon author and details", 0.9, 0.9, 0.9)
+        GameTooltip:Show()
+    end)
+    infoButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    infoButton:SetScript("OnClick", function()
+        if infoFrame then infoFrame:Show() end
+        uiFrame:Hide()
+    end)
+
+    -- Information popup frame
+    infoFrame = CreateFrame("Frame", "WIInfoFrame", UIParent)
+    infoFrame:SetWidth(320); infoFrame:SetHeight(260)
+    infoFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    infoFrame:SetFrameStrata("DIALOG")
+    infoFrame:EnableMouse(true)
+    infoFrame:SetMovable(true)
+    infoFrame:RegisterForDrag("LeftButton")
+    infoFrame:SetScript("OnDragStart", function() this:StartMoving() end)
+    infoFrame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
+    infoFrame:Hide()
+
+    if infoFrame.SetBackdrop then
+        infoFrame:SetBackdrop({
+            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 16,
+            insets = { left = 3, right = 3, top = 3, bottom = 3 }
+        })
+        infoFrame:SetBackdropColor(0, 0, 0, 1)
+    end
+
+    local infoHeader = infoFrame:CreateTexture(nil, "ARTWORK")
+    infoHeader:SetTexture("Interface\\DialogFrame\\UI-DialogBox-Header")
+    infoHeader:SetWidth(256); infoHeader:SetHeight(64)
+    infoHeader:SetPoint("TOP", infoFrame, "TOP", 0, 12)
+
+    local infoTitle = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+    infoTitle:SetPoint("TOP", infoHeader, "TOP", 0, -14)
+    infoTitle:SetText("Information")
+    infoTitle:SetTextColor(1, 0.82, 0) -- gold accent
+
+    local infoText = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    infoText:SetPoint("TOPLEFT", infoFrame, "TOPLEFT", 16, -48)
+    infoText:SetJustifyH("LEFT")
+    infoText:SetWidth(288)
+    infoText:SetText([[|cffffd100Authors:|r Mazli (original) • Stabastian (modernised)
+
+|cffffd100Guild:|r |cffffd000<INSASE>|r
+
+|cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
+
+|cffffd100Version:|r 1.2 |cffa0a0a0(Turtle WoW 1.18.0)|r
+
+|cffffd100Tips:|r Use |cff00ff00/wi add <keyword>|r and |cff00ff00/wi remove <keyword>|r to manage keywords.
+
+|cffffd100Thanks:|r for using WI and keeping invites simple.]])
+
+    local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
+    backButton:SetWidth(80); backButton:SetHeight(22)
+    backButton:SetPoint("BOTTOM", infoFrame, "BOTTOM", 0, 6)
+    backButton:SetText("Back")
+    backButton:SetScript("OnClick", function()
+        infoFrame:Hide()
+        if uiFrame then uiFrame:Show() end
+    end)
 end
 
 local function openConfig()
