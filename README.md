@@ -88,4 +88,4 @@ Open the config: `/wi` or `/wi gui`
 - Authors: Mazli (original), Stabastian (remix)
 - Guild: `<INSASE>`
 
-Thanks for using our <INSANE> addon and keeping invites simple!
+Thank you for using our <INSANE> addon and keeping invites simple!
