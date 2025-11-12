@@ -427,7 +427,8 @@ local function eventHandler()
             btn:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
             local icon = btn:CreateTexture(nil, "ARTWORK")
             icon:SetAllPoints(btn)
-            icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            -- Use custom addon icon (32x32 TGA with alpha)
+            icon:SetTexture("Interface\\AddOns\\WI\\Icon\\wi-icon.tga")
             btn.icon = icon
 
             btn:SetScript("OnEnter", function()
