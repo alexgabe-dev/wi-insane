@@ -19,6 +19,7 @@ local function ensureDefaults()
     if type(WI_Settings.minimap) ~= "table" then WI_Settings.minimap = {} end
     if type(WI_Settings.minimap.show) ~= "boolean" then WI_Settings.minimap.show = true end
     if type(WI_Settings.minimap.angle) ~= "number" then WI_Settings.minimap.angle = 225 end
+    if WI_Settings.debug == nil then WI_Settings.debug = false end
 end
 
 local function hasKeyword(msg)
@@ -215,8 +216,11 @@ SlashCmdList["WI"] = function(msg)
             if WI_Settings.minimap.show then miniButton:Show() else miniButton:Hide() end
         end
         DEFAULT_CHAT_FRAME:AddMessage("[WI] Minimap icon " .. (WI_Settings.minimap.show and "shown" or "hidden"))
+    elseif cmd == "debug" then
+        WI_Settings.debug = not WI_Settings.debug
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Debug " .. (WI_Settings.debug and "ON" or "OFF"))
     else
-        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands: /wi gui | on | off | toggle | add <kw> | remove <kw> | list | map")
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands: /wi gui | on | off | toggle | add <kw> | remove <kw> | list | map | debug")
     end
 end
 
@@ -306,13 +310,36 @@ local function eventHandler(self, event)
     if event == "CHAT_MSG_WHISPER" then
         local message = arg1
         local sender = arg2
-        if WI_Settings.enabled and sender and hasKeyword(normalize(message)) then
-            InviteByName(sender)
-            SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
+        local matched = hasKeyword(normalize(message))
+        if WI_Settings.debug then
+            DEFAULT_CHAT_FRAME:AddMessage("[WI] Whisper from " .. tostring(sender or "?") .. ": '" .. tostring(message or "") .. "' matched=" .. tostring(matched) .. ", enabled=" .. tostring(WI_Settings.enabled))
+        end
+        if WI_Settings.enabled and sender and matched then
+            local ok, reason = canInvite()
+            if ok then
+                InviteByName(sender)
+                SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
+            else
+                if WI_Settings.debug then
+                    DEFAULT_CHAT_FRAME:AddMessage("[WI] Invite blocked: " .. tostring(reason))
+                end
+            end
         end
     end
 end
 
 frame:SetScript("OnEvent", eventHandler)
+
+local function canInvite()
+    local raidMembers = GetNumRaidMembers and GetNumRaidMembers() or 0
+    if raidMembers and raidMembers > 0 then return false, "in raid" end
+    local partyMembers = GetNumPartyMembers and GetNumPartyMembers() or 0
+    if partyMembers and partyMembers >= 4 then return false, "party full" end
+    if partyMembers and partyMembers > 0 then
+        local isLeader = IsPartyLeader and IsPartyLeader()
+        if not isLeader then return false, "not party leader" end
+    end
+    return true, nil
+end
 
 
