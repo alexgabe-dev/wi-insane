@@ -61,8 +61,8 @@ local function createUI()
     uiFrame:EnableMouse(true)
     uiFrame:SetMovable(true)
     uiFrame:RegisterForDrag("LeftButton")
-    uiFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-    uiFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+    uiFrame:SetScript("OnDragStart", function() this:StartMoving() end)
+    uiFrame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
     uiFrame:Hide()
 
     if uiFrame.SetBackdrop then
@@ -246,8 +246,8 @@ local function eventHandler()
             icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
             btn.icon = icon
 
-            btn:SetScript("OnEnter", function(self)
-                GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+            btn:SetScript("OnEnter", function()
+                GameTooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT")
                 GameTooltip:SetText("WI", 1, 1, 1)
                 GameTooltip:AddLine("Left-click: Open GUI", 0.9, 0.9, 0.9)
                 GameTooltip:AddLine("Right-click: Toggle auto-invite", 0.9, 0.9, 0.9)
@@ -256,8 +256,9 @@ local function eventHandler()
             btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
             btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-            btn:SetScript("OnClick", function(self, button)
-                if button == "LeftButton" then
+            btn:SetScript("OnClick", function()
+                local button = arg1
+                if button == "LeftButton" or button == "LeftButtonUp" then
                     openConfig()
                 else
                     WI_Settings.enabled = not WI_Settings.enabled
@@ -267,10 +268,10 @@ local function eventHandler()
             end)
 
             btn:RegisterForDrag("LeftButton")
-            btn:SetScript("OnDragStart", function(self) self.isMoving = true end)
-            btn:SetScript("OnDragStop", function(self) self.isMoving = false end)
-            btn:SetScript("OnUpdate", function(self)
-                if not self.isMoving then return end
+            btn:SetScript("OnDragStart", function() this.isMoving = true end)
+            btn:SetScript("OnDragStop", function() this.isMoving = false end)
+            btn:SetScript("OnUpdate", function()
+                if not this.isMoving then return end
                 local mx, my = Minimap:GetCenter()
                 local cx, cy = GetCursorPosition()
                 local scale = Minimap:GetScale()
@@ -291,7 +292,7 @@ local function eventHandler()
                 local rad = math.rad(angle)
                 local x = math.cos(rad) * r
                 local y = math.sin(rad) * r
-                self:SetPoint("CENTER", Minimap, "CENTER", x, y)
+                this:SetPoint("CENTER", Minimap, "CENTER", x, y)
             end)
 
             local function place()
