@@ -225,7 +225,7 @@ SlashCmdList["WI"] = function(msg)
     end
 end
 
-local function eventHandler(self, event)
+local function eventHandler()
     if event == "VARIABLES_LOADED" then
         ensureDefaults()
         createUI()
