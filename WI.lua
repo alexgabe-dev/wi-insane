@@ -1,5 +1,6 @@
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("VARIABLES_LOADED")
+frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
 
 local function normalize(text)
@@ -53,7 +54,7 @@ end
 local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
-    uiFrame:SetSize(300, 240)
+    uiFrame:SetWidth(300); uiFrame:SetHeight(240)
     uiFrame:SetPoint("CENTER")
     uiFrame:EnableMouse(true)
     uiFrame:SetMovable(true)
@@ -90,12 +91,12 @@ local function createUI()
     label:SetText("Keyword")
 
     keywordEditBox = CreateFrame("EditBox", "WIKeywordEditBox", uiFrame, "InputBoxTemplate")
-    keywordEditBox:SetSize(180, 20)
+    keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
     keywordEditBox:SetAutoFocus(false)
 
     local addButton = CreateFrame("Button", "WIAddButton", uiFrame, "UIPanelButtonTemplate")
-    addButton:SetSize(60, 22)
+    addButton:SetWidth(60); addButton:SetHeight(22)
     addButton:SetPoint("LEFT", keywordEditBox, "RIGHT", 8, 0)
     addButton:SetText("Add")
     addButton:SetScript("OnClick", function()
@@ -113,7 +114,7 @@ local function createUI()
     end)
 
     local removeButton = CreateFrame("Button", "WIRemoveButton", uiFrame, "UIPanelButtonTemplate")
-    removeButton:SetSize(60, 22)
+    removeButton:SetWidth(60); removeButton:SetHeight(22)
     removeButton:SetPoint("LEFT", addButton, "RIGHT", 8, 0)
     removeButton:SetText("Remove")
     removeButton:SetScript("OnClick", function()
@@ -138,7 +139,7 @@ local function createUI()
     keywordListText:SetHeight(100)
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
-    closeButton:SetSize(80, 22)
+    closeButton:SetWidth(80); closeButton:SetHeight(22)
     closeButton:SetPoint("BOTTOM", 0, 12)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
@@ -223,7 +224,13 @@ local function eventHandler(self, event)
     if event == "VARIABLES_LOADED" then
         ensureDefaults()
         createUI()
-        if not miniButton then
+        refreshUI()
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Loaded. Use /wi for options.")
+        return
+    end
+    if event == "PLAYER_LOGIN" then
+        ensureDefaults()
+        if not miniButton and Minimap then
             local btn = CreateFrame("Button", "WI_MinimapButton", Minimap)
             btn:SetWidth(20)
             btn:SetHeight(20)
@@ -294,8 +301,6 @@ local function eventHandler(self, event)
             place()
             if WI_Settings.minimap.show then btn:Show() else btn:Hide() end
         end
-        refreshUI()
-        DEFAULT_CHAT_FRAME:AddMessage("[WI] Loaded. Use /wi for options.")
         return
     end
     if event == "CHAT_MSG_WHISPER" then
