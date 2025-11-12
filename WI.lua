@@ -225,7 +225,7 @@ local function createUI()
 
     -- Information popup frame
     infoFrame = CreateFrame("Frame", "WIInfoFrame", UIParent)
-    infoFrame:SetWidth(320); infoFrame:SetHeight(280)
+    infoFrame:SetWidth(320); infoFrame:SetHeight(260)
     infoFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     infoFrame:SetFrameStrata("DIALOG")
     infoFrame:EnableMouse(true)
@@ -265,49 +265,11 @@ local function createUI()
 
 |cffffd100Version:|r 1.2  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
 
-|cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.]])
+|cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.
 
-    -- Bug report line with compact copy symbol button (⿻)
-    local bugLabel = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    bugLabel:SetPoint("TOPLEFT", infoText, "BOTTOMLEFT", 0, -10)
-    bugLabel:SetText("|cffffd100Bug report:|r")
+|cffffd100Bug report:|r |cff00ff00https://github.com/alexgabe-dev/wi-insane/issues|r
 
-    local bugLink = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    bugLink:SetPoint("LEFT", bugLabel, "RIGHT", 6, 0)
-    bugLink:SetJustifyH("LEFT")
-    local bugUrl = "https://github.com/alexgabe-dev/wi-insane/issues"
-    bugLink:SetText("|cff00ff00" .. bugUrl .. "|r")
-
-    -- Compact text-only button aligned to the right to avoid overflow
-    local bugCopyBtn = CreateFrame("Button", "WIInfoBugCopy", infoFrame)
-    bugCopyBtn:SetWidth(16); bugCopyBtn:SetHeight(16)
-    bugCopyBtn:SetPoint("RIGHT", infoFrame, "RIGHT", -16, 0)
-    local bugCopyText = bugCopyBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    bugCopyText:SetPoint("CENTER")
-    bugCopyText:SetText("⿻")
-    bugCopyBtn:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT")
-        GameTooltip:SetText("Copy URL", 1, 1, 1)
-        GameTooltip:AddLine("Place bug URL into chat box", 0.9, 0.9, 0.9)
-        GameTooltip:Show()
-    end)
-    bugCopyBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-    bugCopyBtn:SetScript("OnClick", function()
-        if ChatFrameEditBox then
-            ChatFrameEditBox:SetText(bugUrl)
-            ChatFrameEditBox:Show(); ChatFrameEditBox:SetFocus(); ChatFrameEditBox:HighlightText()
-        end
-        if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("[WI] Bug report URL placed into chat box.") end
-    end)
-
-    -- Ensure the link doesn't run under the button: anchor its right to the button
-    bugLink:SetPoint("RIGHT", bugCopyBtn, "LEFT", -6, 0)
-
-    local thanksText = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    thanksText:SetPoint("TOPLEFT", bugLabel, "BOTTOMLEFT", 0, -10)
-    thanksText:SetJustifyH("LEFT")
-    thanksText:SetWidth(288)
-    thanksText:SetText("Thanks for using our |cff00ff00<INSASE>|r addon!")
+Thanks for using our |cff00ff00<INSASE>|r addon!]])
 
 
     local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
@@ -318,7 +280,6 @@ local function createUI()
         infoFrame:Hide()
         if uiFrame then uiFrame:Show() end
     end)
-
 end
 
 local function openConfig()
