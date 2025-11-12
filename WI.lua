@@ -260,15 +260,13 @@ local function createUI()
     infoText:SetPoint("TOPLEFT", infoFrame, "TOPLEFT", 16, -48)
     infoText:SetJustifyH("LEFT")
     infoText:SetWidth(288)
-    infoText:SetText([[|cffffd100Authors:|r Mazli (original) • Stabastian (modernised)
+    infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (modernised)
 
-|cffffd100Guild:|r |cffffd000<INSASE>|r
+|cffffd100Guild:|r |cff00ff00<INSASE>|r
 
 |cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
 
 |cffffd100Version:|r 1.2 |cffa0a0a0(Turtle WoW 1.18.0)|r
-
-|cffffd100Tips:|r Use |cff00ff00/wi add <keyword>|r and |cff00ff00/wi remove <keyword>|r to manage keywords.
 
 |cffffd100Thanks:|r for using WI and keeping invites simple.]])
 
