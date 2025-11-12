@@ -316,15 +316,11 @@ local function eventHandler(self, event)
             DEFAULT_CHAT_FRAME:AddMessage("[WI] Whisper from " .. tostring(sender or "?") .. ": '" .. tostring(message or "") .. "' matched=" .. tostring(matched) .. ", enabled=" .. tostring(WI_Settings.enabled))
         end
         if WI_Settings.enabled and sender and matched then
-            local ok, reason = canInvite()
-            if ok then
-                InviteByName(sender)
-                SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
-            else
-                if WI_Settings.debug then
-                    DEFAULT_CHAT_FRAME:AddMessage("[WI] Invite blocked: " .. tostring(reason))
-                end
+            if WI_Settings.debug then
+                DEFAULT_CHAT_FRAME:AddMessage("[WI] Invite attempt for " .. tostring(sender))
             end
+            InviteByName(sender)
+            SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
         end
     end
 end
