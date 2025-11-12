@@ -35,9 +35,9 @@ local uiFrame
 local keywordEditBox
 local enableCheckbox
 local keywordListText
+local keywordScroll
+local keywordScrollChild
 local miniButton
-local showAllKeywords = false
-local showButton
 local canInvite -- forward declaration so event handler sees local, not global
 
 local function refreshUI()
@@ -47,25 +47,18 @@ local function refreshUI()
     local list = ""
     if WI_Settings and type(WI_Settings.keywords) == "table" then
         local total = table.getn(WI_Settings.keywords)
-        local limit = showAllKeywords and total or 8
-        if limit > total then limit = total end
-        for i = 1, limit do
+        for i = 1, total do
             local kw = WI_Settings.keywords[i]
             list = list .. i .. ". " .. tostring(kw or "") .. "\n"
         end
-        if not showAllKeywords and total > limit then
-            list = list .. "... (" .. (total - limit) .. " more)"
-        end
     end
     if list == "" then list = "(no keywords)" end
-    if keywordListText then keywordListText:SetText(list) end
-    if showButton then
-        local total = (WI_Settings and WI_Settings.keywords and table.getn(WI_Settings.keywords)) or 0
-        if total > 8 then
-            showButton:Show()
-            showButton:SetText(showAllKeywords and "Show Less" or "Show More")
-        else
-            showButton:Hide()
+    if keywordListText then
+        keywordListText:SetText(list)
+        if keywordScrollChild and keywordScroll then
+            local h = keywordListText:GetStringHeight()
+            if not h or h < 1 then h = 1 end
+            keywordScrollChild:SetHeight(h + 6)
         end
     end
 end
@@ -178,32 +171,25 @@ local function createUI()
     listLabel:SetPoint("TOPLEFT", keywordEditBox, "BOTTOMLEFT", 0, -14)
     listLabel:SetText("Keywords:")
 
-    showButton = CreateFrame("Button", "WIShowButton", uiFrame, "UIPanelButtonTemplate")
-    showButton:SetWidth(90); showButton:SetHeight(20)
-    showButton:SetPoint("LEFT", listLabel, "RIGHT", 8, 0)
-    showButton:SetText("Show More")
-    showButton:SetScript("OnClick", function()
-        showAllKeywords = not showAllKeywords
-        refreshUI()
-    end)
-    showButton:SetScript("OnEnter", function()
-        GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Toggle keyword list", 1, 1, 1)
-        GameTooltip:AddLine("Show all or the first 8", 0.9, 0.9, 0.9)
-        GameTooltip:Show()
-    end)
-    showButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    keywordScroll = CreateFrame("ScrollFrame", "WIKeywordScroll", uiFrame, "UIPanelScrollFrameTemplate")
+    keywordScroll:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
+    keywordScroll:SetWidth(260)
+    keywordScroll:SetHeight(100)
 
-    keywordListText = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    keywordListText:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
+    keywordScrollChild = CreateFrame("Frame", "WIKeywordScrollChild", keywordScroll)
+    keywordScrollChild:SetWidth(240)
+    keywordScrollChild:SetHeight(1)
+    keywordScroll:SetScrollChild(keywordScrollChild)
+
+    keywordListText = keywordScrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    keywordListText:SetPoint("TOPLEFT", keywordScrollChild, "TOPLEFT", 0, 0)
     keywordListText:SetJustifyH("LEFT")
-    keywordListText:SetWidth(260)
-    keywordListText:SetHeight(80)
+    keywordListText:SetWidth(240)
 
     local listBg = uiFrame:CreateTexture(nil, "BACKGROUND")
     listBg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-    listBg:SetPoint("TOPLEFT", keywordListText, "TOPLEFT", -6, 6)
-    listBg:SetPoint("BOTTOMRIGHT", keywordListText, "BOTTOMRIGHT", 6, -6)
+    listBg:SetPoint("TOPLEFT", keywordScroll, "TOPLEFT", -6, 6)
+    listBg:SetPoint("BOTTOMRIGHT", keywordScroll, "BOTTOMRIGHT", 6, -6)
     listBg:SetVertexColor(0, 0, 0, 0.4)
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
