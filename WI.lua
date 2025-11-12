@@ -260,15 +260,17 @@ local function createUI()
     infoText:SetPoint("TOPLEFT", infoFrame, "TOPLEFT", 16, -48)
     infoText:SetJustifyH("LEFT")
     infoText:SetWidth(288)
-    infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (modernised)
+    infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (remix)
 
 |cffffd100Guild:|r |cff00ff00<INSASE>|r
 
 |cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
 
-|cffffd100Version:|r 1.2 |cffa0a0a0(Turtle WoW 1.18.0)|r
+|cffffd100Version:|r 1.2  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
 
-|cffffd100Thanks:|r for using WI and keeping invites simple.]])
+|cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.
+
+Thanks for using our |cff00ff00<INSASE>|r addon!]])
 
     local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
     backButton:SetWidth(80); backButton:SetHeight(22)
@@ -353,8 +355,18 @@ SlashCmdList["WI"] = function(msg)
     elseif cmd == "debug" then
         WI_Settings.debug = not WI_Settings.debug
         DEFAULT_CHAT_FRAME:AddMessage("[WI] Debug " .. (WI_Settings.debug and "ON" or "OFF"))
+    elseif cmd == "help" then
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands:")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi gui|r - open config window")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi on|r | |cff00ff00/wi off|r | |cff00ff00/wi toggle|r - enable/disable auto-invite")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi add <keyword>|r - add keyword")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi remove <keyword>|r - remove keyword")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi list|r - list keywords")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi map|r - show/hide minimap icon")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi debug|r - toggle debug logging")
+        DEFAULT_CHAT_FRAME:AddMessage("  |cff00ff00/wi help|r - show this help")
     else
-        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands: /wi gui | on | off | toggle | add <kw> | remove <kw> | list | map | debug")
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Unknown command. Type |cff00ff00/wi help|r for usage.")
     end
 end
 
