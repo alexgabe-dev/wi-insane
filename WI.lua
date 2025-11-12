@@ -36,6 +36,8 @@ local keywordEditBox
 local enableCheckbox
 local keywordListText
 local miniButton
+local showAllKeywords = false
+local showButton
 local canInvite -- forward declaration so event handler sees local, not global
 
 local function refreshUI()
@@ -44,13 +46,28 @@ local function refreshUI()
     if enableCheckbox then enableCheckbox:SetChecked(enabled) end
     local list = ""
     if WI_Settings and type(WI_Settings.keywords) == "table" then
-        for i = 1, table.getn(WI_Settings.keywords) do
+        local total = table.getn(WI_Settings.keywords)
+        local limit = showAllKeywords and total or 8
+        if limit > total then limit = total end
+        for i = 1, limit do
             local kw = WI_Settings.keywords[i]
             list = list .. i .. ". " .. tostring(kw or "") .. "\n"
+        end
+        if not showAllKeywords and total > limit then
+            list = list .. "... (" .. (total - limit) .. " more)"
         end
     end
     if list == "" then list = "(no keywords)" end
     if keywordListText then keywordListText:SetText(list) end
+    if showButton then
+        local total = (WI_Settings and WI_Settings.keywords and table.getn(WI_Settings.keywords)) or 0
+        if total > 8 then
+            showButton:Show()
+            showButton:SetText(showAllKeywords and "Show Less" or "Show More")
+        else
+            showButton:Hide()
+        end
+    end
 end
 
 local function createUI()
@@ -160,6 +177,22 @@ local function createUI()
     local listLabel = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     listLabel:SetPoint("TOPLEFT", keywordEditBox, "BOTTOMLEFT", 0, -14)
     listLabel:SetText("Keywords:")
+
+    showButton = CreateFrame("Button", "WIShowButton", uiFrame, "UIPanelButtonTemplate")
+    showButton:SetWidth(90); showButton:SetHeight(20)
+    showButton:SetPoint("LEFT", listLabel, "RIGHT", 8, 0)
+    showButton:SetText("Show More")
+    showButton:SetScript("OnClick", function()
+        showAllKeywords = not showAllKeywords
+        refreshUI()
+    end)
+    showButton:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Toggle keyword list", 1, 1, 1)
+        GameTooltip:AddLine("Show all or the first 8", 0.9, 0.9, 0.9)
+        GameTooltip:Show()
+    end)
+    showButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
     keywordListText = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     keywordListText:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
