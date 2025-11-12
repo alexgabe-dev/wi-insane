@@ -4,8 +4,9 @@ frame:RegisterEvent("CHAT_MSG_WHISPER")
 
 local function normalize(text)
     if not text then return "" end
-    local trimmed = string.gsub(text, "^%s*(.-)%s*$", "%1")
-    return string.lower(trimmed)
+    local s = string.gsub(text, "^%s+", "")
+    s = string.gsub(s, "%s+$", "")
+    return string.lower(s)
 end
 
 local function ensureDefaults()
@@ -14,6 +15,9 @@ local function ensureDefaults()
     if type(WI_Settings.keywords) ~= "table" or #WI_Settings.keywords == 0 then
         WI_Settings.keywords = {"+", "sör"}
     end
+    if type(WI_Settings.minimap) ~= "table" then WI_Settings.minimap = {} end
+    if type(WI_Settings.minimap.show) ~= "boolean" then WI_Settings.minimap.show = true end
+    if type(WI_Settings.minimap.angle) ~= "number" then WI_Settings.minimap.angle = 225 end
 end
 
 local function hasKeyword(msg)
@@ -28,6 +32,7 @@ local uiFrame
 local keywordEditBox
 local enableCheckbox
 local keywordListText
+local miniButton
 
 local function refreshUI()
     if not uiFrame then return end
@@ -138,8 +143,17 @@ end
 SLASH_WI1 = "/wi"
 SlashCmdList["WI"] = function(msg)
     ensureDefaults()
-    local cmd, rest = string.match(msg or "", "^(%S+)%s*(.-)$")
-    if not cmd or cmd == "" or cmd == "gui" then
+    msg = msg or ""
+    local space = string.find(msg, " ")
+    local cmd, rest
+    if space then
+        cmd = string.sub(msg, 1, space - 1)
+        rest = string.sub(msg, space + 1)
+    else
+        cmd = msg
+        rest = ""
+    end
+    if not cmd or cmd == "" or string.lower(cmd) == "gui" then
         openConfig()
         return
     end
@@ -151,6 +165,10 @@ SlashCmdList["WI"] = function(msg)
     elseif cmd == "off" then
         WI_Settings.enabled = false
         DEFAULT_CHAT_FRAME:AddMessage("[WI] Auto-invite disabled")
+        refreshUI()
+    elseif cmd == "toggle" then
+        WI_Settings.enabled = not WI_Settings.enabled
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Auto-invite " .. (WI_Settings.enabled and "enabled" or "disabled"))
         refreshUI()
     elseif cmd == "add" and rest and rest ~= "" then
         local kw = normalize(rest)
@@ -175,8 +193,14 @@ SlashCmdList["WI"] = function(msg)
             list = list .. (i > 1 and ", " or "") .. kw
         end
         DEFAULT_CHAT_FRAME:AddMessage(list)
+    elseif cmd == "map" then
+        WI_Settings.minimap.show = not WI_Settings.minimap.show
+        if miniButton then
+            if WI_Settings.minimap.show then miniButton:Show() else miniButton:Hide() end
+        end
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Minimap icon " .. (WI_Settings.minimap.show and "shown" or "hidden"))
     else
-        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands: /wi gui | on | off | add <kw> | remove <kw> | list")
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Commands: /wi gui | on | off | toggle | add <kw> | remove <kw> | list | map")
     end
 end
 
@@ -184,6 +208,69 @@ local function eventHandler(self, event)
     if event == "VARIABLES_LOADED" then
         ensureDefaults()
         createUI()
+        if not miniButton then
+            local btn = CreateFrame("Button", "WI_MinimapButton", Minimap)
+            btn:SetWidth(20)
+            btn:SetHeight(20)
+            btn:SetFrameStrata("LOW")
+            btn:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+            local icon = btn:CreateTexture(nil, "ARTWORK")
+            icon:SetAllPoints(btn)
+            icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
+            btn.icon = icon
+
+            btn:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT")
+                GameTooltip:SetText("WI", 1, 1, 1)
+                GameTooltip:AddLine("Left-click: Open GUI", 0.9, 0.9, 0.9)
+                GameTooltip:AddLine("Right-click: Toggle auto-invite", 0.9, 0.9, 0.9)
+                GameTooltip:Show()
+            end)
+            btn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+            btn:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+            btn:SetScript("OnClick", function(self, button)
+                if button == "LeftButton" then
+                    openConfig()
+                else
+                    WI_Settings.enabled = not WI_Settings.enabled
+                    DEFAULT_CHAT_FRAME:AddMessage("[WI] Auto-invite " .. (WI_Settings.enabled and "enabled" or "disabled"))
+                    refreshUI()
+                end
+            end)
+
+            btn:RegisterForDrag("LeftButton")
+            btn:SetScript("OnDragStart", function(self) self.isMoving = true end)
+            btn:SetScript("OnDragStop", function(self) self.isMoving = false end)
+            btn:SetScript("OnUpdate", function(self)
+                if not self.isMoving then return end
+                local mx, my = Minimap:GetCenter()
+                local cx, cy = GetCursorPosition()
+                local scale = Minimap:GetEffectiveScale() or Minimap:GetScale()
+                cx = cx / scale; cy = cy / scale
+                local dx = cx - mx
+                local dy = cy - my
+                local angle = math.deg(math.atan2(dy, dx))
+                WI_Settings.minimap.angle = angle
+                local r = (Minimap:GetWidth() / 2) - 10
+                local rad = math.rad(angle)
+                local x = math.cos(rad) * r
+                local y = math.sin(rad) * r
+                self:SetPoint("CENTER", Minimap, "CENTER", x, y)
+            end)
+
+            local function place()
+                local r = (Minimap:GetWidth() / 2) - 10
+                local rad = math.rad(WI_Settings.minimap.angle)
+                local x = math.cos(rad) * r
+                local y = math.sin(rad) * r
+                btn:SetPoint("CENTER", Minimap, "CENTER", x, y)
+            end
+
+            miniButton = btn
+            place()
+            if WI_Settings.minimap.show then btn:Show() else btn:Hide() end
+        end
         refreshUI()
         return
     end
