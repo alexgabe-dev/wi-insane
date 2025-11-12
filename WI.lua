@@ -71,7 +71,7 @@ end
 local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
-    uiFrame:SetWidth(300); uiFrame:SetHeight(240)
+    uiFrame:SetWidth(340); uiFrame:SetHeight(280)
     uiFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     uiFrame:SetFrameStrata("DIALOG")
     uiFrame:EnableMouse(true)
@@ -121,7 +121,7 @@ local function createUI()
     label:SetText("Keyword")
 
     keywordEditBox = CreateFrame("EditBox", "WIKeywordEditBox", uiFrame, "InputBoxTemplate")
-    keywordEditBox:SetWidth(140); keywordEditBox:SetHeight(20)
+    keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
     if keywordEditBox.SetAutoFocus then keywordEditBox:SetAutoFocus(false) end
 
@@ -178,18 +178,18 @@ local function createUI()
 
     keywordScroll = CreateFrame("ScrollFrame", "WIKeywordScroll", uiFrame, "UIPanelScrollFrameTemplate")
     keywordScroll:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
-    keywordScroll:SetWidth(260)
-    keywordScroll:SetHeight(70)
+    keywordScroll:SetWidth(280)
+    keywordScroll:SetHeight(110)
 
     keywordScrollChild = CreateFrame("Frame", "WIKeywordScrollChild", keywordScroll)
-    keywordScrollChild:SetWidth(230)
+    keywordScrollChild:SetWidth(256)
     keywordScrollChild:SetHeight(1)
     keywordScroll:SetScrollChild(keywordScrollChild)
 
     keywordListText = keywordScrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     keywordListText:SetPoint("TOPLEFT", keywordScrollChild, "TOPLEFT", 0, 0)
     keywordListText:SetJustifyH("LEFT")
-    keywordListText:SetWidth(230)
+    keywordListText:SetWidth(256)
 
     local listBg = uiFrame:CreateTexture(nil, "BACKGROUND")
     listBg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
@@ -199,7 +199,7 @@ local function createUI()
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
     closeButton:SetWidth(80); closeButton:SetHeight(22)
-    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 2)
+    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 12)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
 
