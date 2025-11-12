@@ -106,7 +106,7 @@ local function createUI()
     label:SetText("Keyword")
 
     keywordEditBox = CreateFrame("EditBox", "WIKeywordEditBox", uiFrame, "InputBoxTemplate")
-    keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
+    keywordEditBox:SetWidth(140); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
     if keywordEditBox.SetAutoFocus then keywordEditBox:SetAutoFocus(false) end
 
@@ -165,7 +165,7 @@ local function createUI()
     keywordListText:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
     keywordListText:SetJustifyH("LEFT")
     keywordListText:SetWidth(260)
-    keywordListText:SetHeight(100)
+    keywordListText:SetHeight(80)
 
     local listBg = uiFrame:CreateTexture(nil, "BACKGROUND")
     listBg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
@@ -175,7 +175,7 @@ local function createUI()
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
     closeButton:SetWidth(80); closeButton:SetHeight(22)
-    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 12)
+    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 14)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
 
