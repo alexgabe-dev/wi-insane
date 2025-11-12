@@ -56,9 +56,14 @@ local function refreshUI()
     if keywordListText then
         keywordListText:SetText(list)
         if keywordScrollChild and keywordScroll then
+            local w = keywordScroll:GetWidth() - 24
+            if w < 100 then w = 100 end
+            keywordScrollChild:SetWidth(w)
+            keywordListText:SetWidth(w - 4)
             local h = keywordListText.GetStringHeight and keywordListText:GetStringHeight() or keywordListText:GetHeight()
             if not h or h < 1 then h = keywordScroll:GetHeight() end
             keywordScrollChild:SetHeight(h + 6)
+            keywordScroll:SetVerticalScroll(0)
         end
     end
 end
@@ -174,22 +179,22 @@ local function createUI()
     keywordScroll = CreateFrame("ScrollFrame", "WIKeywordScroll", uiFrame, "UIPanelScrollFrameTemplate")
     keywordScroll:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
     keywordScroll:SetWidth(260)
-    keywordScroll:SetHeight(100)
+    keywordScroll:SetHeight(80)
 
     keywordScrollChild = CreateFrame("Frame", "WIKeywordScrollChild", keywordScroll)
-    keywordScrollChild:SetWidth(240)
+    keywordScrollChild:SetWidth(230)
     keywordScrollChild:SetHeight(1)
     keywordScroll:SetScrollChild(keywordScrollChild)
 
     keywordListText = keywordScrollChild:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     keywordListText:SetPoint("TOPLEFT", keywordScrollChild, "TOPLEFT", 0, 0)
     keywordListText:SetJustifyH("LEFT")
-    keywordListText:SetWidth(240)
+    keywordListText:SetWidth(230)
 
     local listBg = uiFrame:CreateTexture(nil, "BACKGROUND")
     listBg:SetTexture("Interface\\ChatFrame\\ChatFrameBackground")
-    listBg:SetPoint("TOPLEFT", keywordScroll, "TOPLEFT", -6, 6)
-    listBg:SetPoint("BOTTOMRIGHT", keywordScroll, "BOTTOMRIGHT", 6, -6)
+    listBg:SetPoint("TOPLEFT", keywordScroll, "TOPLEFT", -4, 4)
+    listBg:SetPoint("BOTTOMRIGHT", keywordScroll, "BOTTOMRIGHT", 4, -4)
     listBg:SetVertexColor(0, 0, 0, 0.4)
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
