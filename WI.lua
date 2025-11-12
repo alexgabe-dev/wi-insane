@@ -71,7 +71,7 @@ end
 local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
-    uiFrame:SetWidth(340); uiFrame:SetHeight(300)
+    uiFrame:SetWidth(340); uiFrame:SetHeight(320)
     uiFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     uiFrame:SetFrameStrata("DIALOG")
     uiFrame:EnableMouse(true)
