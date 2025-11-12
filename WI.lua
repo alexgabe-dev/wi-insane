@@ -39,7 +39,6 @@ local keywordListText
 local keywordScroll
 local keywordScrollChild
 local miniButton
-local canInvite -- forward declaration so event handler sees local, not global
 
 local function refreshUI()
     if not uiFrame then return end
@@ -262,15 +261,16 @@ local function createUI()
     infoText:SetWidth(288)
     infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (remix)
 
-|cffffd100Guild:|r |cff00ff00<INSASE>|r
-
 |cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
 
 |cffffd100Version:|r 1.2  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
 
 |cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.
 
+|cffffd100Bug report:|r |cff00ff00https://github.com/alexgabe-dev/wi-insane/issues|r
+
 Thanks for using our |cff00ff00<INSASE>|r addon!]])
+
 
     local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
     backButton:SetWidth(80); backButton:SetHeight(22)
@@ -279,6 +279,24 @@ Thanks for using our |cff00ff00<INSASE>|r addon!]])
     backButton:SetScript("OnClick", function()
         infoFrame:Hide()
         if uiFrame then uiFrame:Show() end
+    end)
+
+    -- Bug report helper: copy URL into chat box for easy sharing/copy
+    local bugButton = CreateFrame("Button", "WIInfoBugButton", infoFrame, "UIPanelButtonTemplate")
+    bugButton:SetWidth(90); bugButton:SetHeight(22)
+    bugButton:SetPoint("BOTTOMLEFT", infoFrame, "BOTTOMLEFT", 12, 6)
+    bugButton:SetText("Copy URL")
+    bugButton:SetScript("OnClick", function()
+        local url = "https://github.com/alexgabe-dev/wi-insane/issues"
+        if ChatFrameEditBox then
+            ChatFrameEditBox:SetText(url)
+            ChatFrameEditBox:Show()
+            ChatFrameEditBox:SetFocus()
+            ChatFrameEditBox:HighlightText()
+        end
+        if DEFAULT_CHAT_FRAME then
+            DEFAULT_CHAT_FRAME:AddMessage("[WI] Bug report URL placed into chat box.")
+        end
     end)
 end
 
@@ -472,17 +490,5 @@ local function eventHandler()
 end
 
 frame:SetScript("OnEvent", eventHandler)
-
-function canInvite()
-    local raidMembers = GetNumRaidMembers and GetNumRaidMembers() or 0
-    if raidMembers and raidMembers > 0 then return false, "in raid" end
-    local partyMembers = GetNumPartyMembers and GetNumPartyMembers() or 0
-    if partyMembers and partyMembers >= 4 then return false, "party full" end
-    if partyMembers and partyMembers > 0 then
-        local isLeader = IsPartyLeader and IsPartyLeader()
-        if not isLeader then return false, "not party leader" end
-    end
-    return true, nil
-end
 
 
