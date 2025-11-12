@@ -56,8 +56,8 @@ local function refreshUI()
     if keywordListText then
         keywordListText:SetText(list)
         if keywordScrollChild and keywordScroll then
-            local h = keywordListText:GetStringHeight()
-            if not h or h < 1 then h = 1 end
+            local h = keywordListText.GetStringHeight and keywordListText:GetStringHeight() or keywordListText:GetHeight()
+            if not h or h < 1 then h = keywordScroll:GetHeight() end
             keywordScrollChild:SetHeight(h + 6)
         end
     end
