@@ -37,14 +37,17 @@ local miniButton
 
 local function refreshUI()
     if not uiFrame then return end
-    enableCheckbox:SetChecked(WI_Settings.enabled)
+    local enabled = (WI_Settings and WI_Settings.enabled) and true or false
+    if enableCheckbox then enableCheckbox:SetChecked(enabled) end
     local list = ""
-    for i = 1, table.getn(WI_Settings.keywords) do
-        local kw = WI_Settings.keywords[i]
-        list = list .. i .. ". " .. kw .. "\n"
+    if WI_Settings and type(WI_Settings.keywords) == "table" then
+        for i = 1, table.getn(WI_Settings.keywords) do
+            local kw = WI_Settings.keywords[i]
+            list = list .. i .. ". " .. tostring(kw or "") .. "\n"
+        end
     end
     if list == "" then list = "(no keywords)" end
-    keywordListText:SetText(list)
+    if keywordListText then keywordListText:SetText(list) end
 end
 
 local function createUI()
