@@ -212,7 +212,7 @@ local function eventHandler(self, event)
             local btn = CreateFrame("Button", "WI_MinimapButton", Minimap)
             btn:SetWidth(20)
             btn:SetHeight(20)
-            btn:SetFrameStrata("LOW")
+            btn:SetFrameStrata("MEDIUM")
             btn:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
             local icon = btn:CreateTexture(nil, "ARTWORK")
             icon:SetAllPoints(btn)
@@ -246,11 +246,19 @@ local function eventHandler(self, event)
                 if not self.isMoving then return end
                 local mx, my = Minimap:GetCenter()
                 local cx, cy = GetCursorPosition()
-                local scale = Minimap:GetEffectiveScale() or Minimap:GetScale()
+                local scale = Minimap:GetScale()
                 cx = cx / scale; cy = cy / scale
                 local dx = cx - mx
                 local dy = cy - my
-                local angle = math.deg(math.atan2(dy, dx))
+                local angleRad
+                if dx == 0 then
+                    angleRad = (dy >= 0) and math.pi/2 or -math.pi/2
+                else
+                    angleRad = math.atan(dy / dx)
+                    if dx < 0 then angleRad = angleRad + math.pi end
+                end
+                local angle = math.deg(angleRad)
+                if angle < 0 then angle = angle + 360 end
                 WI_Settings.minimap.angle = angle
                 local r = (Minimap:GetWidth() / 2) - 10
                 local rad = math.rad(angle)
@@ -272,6 +280,7 @@ local function eventHandler(self, event)
             if WI_Settings.minimap.show then btn:Show() else btn:Hide() end
         end
         refreshUI()
+        DEFAULT_CHAT_FRAME:AddMessage("[WI] Loaded. Use /wi for options.")
         return
     end
     if event == "CHAT_MSG_WHISPER" then
