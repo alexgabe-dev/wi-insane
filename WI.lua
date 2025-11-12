@@ -225,7 +225,7 @@ local function createUI()
 
     -- Information popup frame
     infoFrame = CreateFrame("Frame", "WIInfoFrame", UIParent)
-    infoFrame:SetWidth(320); infoFrame:SetHeight(260)
+    infoFrame:SetWidth(320); infoFrame:SetHeight(280)
     infoFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     infoFrame:SetFrameStrata("DIALOG")
     infoFrame:EnableMouse(true)
@@ -265,11 +265,44 @@ local function createUI()
 
 |cffffd100Version:|r 1.2  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
 
-|cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.
+|cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.]])
 
-|cffffd100Bug report:|r |cff00ff00https://github.com/alexgabe-dev/wi-insane/issues|r
+    -- Bug report line with compact copy symbol button (⿻)
+    local bugLabel = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    bugLabel:SetPoint("TOPLEFT", infoText, "BOTTOMLEFT", 0, -10)
+    bugLabel:SetText("|cffffd100Bug report:|r")
 
-Thanks for using our |cff00ff00<INSASE>|r addon!]])
+    local bugLink = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    bugLink:SetPoint("LEFT", bugLabel, "RIGHT", 6, 0)
+    bugLink:SetJustifyH("LEFT")
+    bugLink:SetWidth(220)
+    local bugUrl = "https://github.com/alexgabe-dev/wi-insane/issues"
+    bugLink:SetText("|cff00ff00" .. bugUrl .. "|r")
+
+    local bugCopyBtn = CreateFrame("Button", "WIInfoBugCopy", infoFrame, "UIPanelButtonTemplate")
+    bugCopyBtn:SetWidth(20); bugCopyBtn:SetHeight(20)
+    bugCopyBtn:SetPoint("LEFT", bugLink, "RIGHT", 6, 0)
+    bugCopyBtn:SetText("⿻")
+    bugCopyBtn:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT")
+        GameTooltip:SetText("Copy URL", 1, 1, 1)
+        GameTooltip:AddLine("Place bug URL into chat box", 0.9, 0.9, 0.9)
+        GameTooltip:Show()
+    end)
+    bugCopyBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    bugCopyBtn:SetScript("OnClick", function()
+        if ChatFrameEditBox then
+            ChatFrameEditBox:SetText(bugUrl)
+            ChatFrameEditBox:Show(); ChatFrameEditBox:SetFocus(); ChatFrameEditBox:HighlightText()
+        end
+        if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("[WI] Bug report URL placed into chat box.") end
+    end)
+
+    local thanksText = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    thanksText:SetPoint("TOPLEFT", bugLabel, "BOTTOMLEFT", 0, -10)
+    thanksText:SetJustifyH("LEFT")
+    thanksText:SetWidth(288)
+    thanksText:SetText("Thanks for using our |cff00ff00<INSASE>|r addon!")
 
 
     local backButton = CreateFrame("Button", "WIInfoBackButton", infoFrame, "UIPanelButtonTemplate")
@@ -281,23 +314,6 @@ Thanks for using our |cff00ff00<INSASE>|r addon!]])
         if uiFrame then uiFrame:Show() end
     end)
 
-    -- Bug report helper: copy URL into chat box for easy sharing/copy
-    local bugButton = CreateFrame("Button", "WIInfoBugButton", infoFrame, "UIPanelButtonTemplate")
-    bugButton:SetWidth(90); bugButton:SetHeight(22)
-    bugButton:SetPoint("BOTTOMLEFT", infoFrame, "BOTTOMLEFT", 12, 6)
-    bugButton:SetText("Copy URL")
-    bugButton:SetScript("OnClick", function()
-        local url = "https://github.com/alexgabe-dev/wi-insane/issues"
-        if ChatFrameEditBox then
-            ChatFrameEditBox:SetText(url)
-            ChatFrameEditBox:Show()
-            ChatFrameEditBox:SetFocus()
-            ChatFrameEditBox:HighlightText()
-        end
-        if DEFAULT_CHAT_FRAME then
-            DEFAULT_CHAT_FRAME:AddMessage("[WI] Bug report URL placed into chat box.")
-        end
-    end)
 end
 
 local function openConfig()
