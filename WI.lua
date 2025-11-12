@@ -275,14 +275,16 @@ local function createUI()
     local bugLink = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     bugLink:SetPoint("LEFT", bugLabel, "RIGHT", 6, 0)
     bugLink:SetJustifyH("LEFT")
-    bugLink:SetWidth(220)
     local bugUrl = "https://github.com/alexgabe-dev/wi-insane/issues"
     bugLink:SetText("|cff00ff00" .. bugUrl .. "|r")
 
-    local bugCopyBtn = CreateFrame("Button", "WIInfoBugCopy", infoFrame, "UIPanelButtonTemplate")
-    bugCopyBtn:SetWidth(20); bugCopyBtn:SetHeight(20)
-    bugCopyBtn:SetPoint("LEFT", bugLink, "RIGHT", 6, 0)
-    bugCopyBtn:SetText("⿻")
+    -- Compact text-only button aligned to the right to avoid overflow
+    local bugCopyBtn = CreateFrame("Button", "WIInfoBugCopy", infoFrame)
+    bugCopyBtn:SetWidth(16); bugCopyBtn:SetHeight(16)
+    bugCopyBtn:SetPoint("RIGHT", infoFrame, "RIGHT", -16, 0)
+    local bugCopyText = bugCopyBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    bugCopyText:SetPoint("CENTER")
+    bugCopyText:SetText("⿻")
     bugCopyBtn:SetScript("OnEnter", function()
         GameTooltip:SetOwner(this, "ANCHOR_TOPRIGHT")
         GameTooltip:SetText("Copy URL", 1, 1, 1)
@@ -297,6 +299,9 @@ local function createUI()
         end
         if DEFAULT_CHAT_FRAME then DEFAULT_CHAT_FRAME:AddMessage("[WI] Bug report URL placed into chat box.") end
     end)
+
+    -- Ensure the link doesn't run under the button: anchor its right to the button
+    bugLink:SetPoint("RIGHT", bugCopyBtn, "LEFT", -6, 0)
 
     local thanksText = infoFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     thanksText:SetPoint("TOPLEFT", bugLabel, "BOTTOMLEFT", 0, -10)
