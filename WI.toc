@@ -1,5 +1,5 @@
 ## Interface: 11200
-## Title: WI
+## Title: |cffFFF468WI-INSANE Invite|r
 ## Notes: Auto-invite with configurable keywords and toggle
 ## Version: 1.2
 ## SavedVariables: WI_Settings
