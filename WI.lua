@@ -55,7 +55,7 @@ local function createUI()
     if uiFrame then return end
     uiFrame = CreateFrame("Frame", "WIConfigFrame", UIParent)
     uiFrame:SetWidth(300); uiFrame:SetHeight(240)
-    uiFrame:SetPoint("CENTER")
+    uiFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     uiFrame:EnableMouse(true)
     uiFrame:SetMovable(true)
     uiFrame:RegisterForDrag("LeftButton")
@@ -74,12 +74,12 @@ local function createUI()
     end
 
     local title = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("TOP", 0, -12)
+    title:SetPoint("TOP", uiFrame, "TOP", 0, -12)
     title:SetText("WI Config")
 
     enableCheckbox = CreateFrame("CheckButton", "WIEnableCheckbox", uiFrame, "UICheckButtonTemplate")
-    enableCheckbox:SetPoint("TOPLEFT", 16, -40)
-    enableCheckbox.text = _G[enableCheckbox:GetName() .. "Text"]
+    enableCheckbox:SetPoint("TOPLEFT", uiFrame, "TOPLEFT", 16, -40)
+    enableCheckbox.text = getglobal(enableCheckbox:GetName() .. "Text")
     enableCheckbox.text:SetText("Enable auto-invite")
     enableCheckbox:SetScript("OnClick", function()
         WI_Settings.enabled = enableCheckbox:GetChecked() and true or false
@@ -93,7 +93,7 @@ local function createUI()
     keywordEditBox = CreateFrame("EditBox", "WIKeywordEditBox", uiFrame, "InputBoxTemplate")
     keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
-    keywordEditBox:SetAutoFocus(false)
+    if keywordEditBox.SetAutoFocus then keywordEditBox:SetAutoFocus(false) end
 
     local addButton = CreateFrame("Button", "WIAddButton", uiFrame, "UIPanelButtonTemplate")
     addButton:SetWidth(60); addButton:SetHeight(22)
@@ -140,7 +140,7 @@ local function createUI()
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
     closeButton:SetWidth(80); closeButton:SetHeight(22)
-    closeButton:SetPoint("BOTTOM", 0, 12)
+    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 12)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
 end
