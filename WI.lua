@@ -12,7 +12,7 @@ end
 local function ensureDefaults()
     if type(WI_Settings) ~= "table" then WI_Settings = {} end
     if type(WI_Settings.enabled) ~= "boolean" then WI_Settings.enabled = true end
-    if type(WI_Settings.keywords) ~= "table" or #WI_Settings.keywords == 0 then
+    if type(WI_Settings.keywords) ~= "table" or table.getn(WI_Settings.keywords) == 0 then
         WI_Settings.keywords = {"+", "sör"}
     end
     if type(WI_Settings.minimap) ~= "table" then WI_Settings.minimap = {} end
@@ -22,7 +22,8 @@ end
 
 local function hasKeyword(msg)
     if type(WI_Settings) ~= "table" or type(WI_Settings.keywords) ~= "table" then return false end
-    for _, kw in ipairs(WI_Settings.keywords) do
+    for i = 1, table.getn(WI_Settings.keywords) do
+        local kw = WI_Settings.keywords[i]
         if normalize(kw) == msg then return true end
     end
     return false
@@ -38,7 +39,8 @@ local function refreshUI()
     if not uiFrame then return end
     enableCheckbox:SetChecked(WI_Settings.enabled)
     local list = ""
-    for i, kw in ipairs(WI_Settings.keywords) do
+    for i = 1, table.getn(WI_Settings.keywords) do
+        local kw = WI_Settings.keywords[i]
         list = list .. i .. ". " .. kw .. "\n"
     end
     if list == "" then list = "(no keywords)" end
@@ -97,7 +99,10 @@ local function createUI()
         local kw = normalize(keywordEditBox:GetText())
         if kw ~= "" then
             local exists = false
-            for _, v in ipairs(WI_Settings.keywords) do if normalize(v) == kw then exists = true break end end
+            for i = 1, table.getn(WI_Settings.keywords) do
+                local v = WI_Settings.keywords[i]
+                if normalize(v) == kw then exists = true; break end
+            end
             if not exists then table.insert(WI_Settings.keywords, kw) end
             keywordEditBox:SetText("")
             refreshUI()
@@ -111,7 +116,7 @@ local function createUI()
     removeButton:SetScript("OnClick", function()
         local kw = normalize(keywordEditBox:GetText())
         if kw ~= "" then
-            for i = #WI_Settings.keywords, 1, -1 do
+            for i = table.getn(WI_Settings.keywords), 1, -1 do
                 if normalize(WI_Settings.keywords[i]) == kw then table.remove(WI_Settings.keywords, i) end
             end
             keywordEditBox:SetText("")
@@ -177,7 +182,10 @@ SlashCmdList["WI"] = function(msg)
         local kw = normalize(rest)
         if kw ~= "" then
             local exists = false
-            for _, v in ipairs(WI_Settings.keywords) do if normalize(v) == kw then exists = true break end end
+            for i = 1, table.getn(WI_Settings.keywords) do
+                local v = WI_Settings.keywords[i]
+                if normalize(v) == kw then exists = true; break end
+            end
             if not exists then table.insert(WI_Settings.keywords, kw) end
             DEFAULT_CHAT_FRAME:AddMessage("[WI] Added keyword: " .. kw)
             refreshUI()
@@ -185,14 +193,15 @@ SlashCmdList["WI"] = function(msg)
     elseif cmd == "remove" and rest and rest ~= "" then
         local kw = normalize(rest)
         local removed = false
-        for i = #WI_Settings.keywords, 1, -1 do
+        for i = table.getn(WI_Settings.keywords), 1, -1 do
             if normalize(WI_Settings.keywords[i]) == kw then table.remove(WI_Settings.keywords, i) removed = true end
         end
         DEFAULT_CHAT_FRAME:AddMessage("[WI] " .. (removed and "Removed" or "Not found") .. ": " .. kw)
         refreshUI()
     elseif cmd == "list" then
         local list = "[WI] Keywords: "
-        for i, kw in ipairs(WI_Settings.keywords) do
+        for i = 1, table.getn(WI_Settings.keywords) do
+            local kw = WI_Settings.keywords[i]
             list = list .. (i > 1 and ", " or "") .. kw
         end
         DEFAULT_CHAT_FRAME:AddMessage(list)
