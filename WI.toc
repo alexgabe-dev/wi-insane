@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: WI
+## Notes: Auto-invite with configurable keywords and toggle
+## Version: 1.0
+## SavedVariables: WI_Settings
+
+WI.lua
