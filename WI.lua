@@ -199,7 +199,7 @@ local function createUI()
 
     local closeButton = CreateFrame("Button", "WICloseButton", uiFrame, "UIPanelButtonTemplate")
     closeButton:SetWidth(80); closeButton:SetHeight(22)
-    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 14)
+    closeButton:SetPoint("BOTTOM", uiFrame, "BOTTOM", 0, 6)
     closeButton:SetText("Close")
     closeButton:SetScript("OnClick", function() uiFrame:Hide() end)
 
