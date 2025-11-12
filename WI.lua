@@ -57,13 +57,15 @@ local function createUI()
     uiFrame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
     uiFrame:Hide()
 
-    uiFrame:SetBackdrop({
-        bgFile = "Interface/Tooltips/UI-Tooltip-Background",
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-        tile = true, tileSize = 16, edgeSize = 16,
-        insets = { left = 3, right = 3, top = 3, bottom = 3 }
-    })
-    uiFrame:SetBackdropColor(0, 0, 0, 1)
+    if uiFrame.SetBackdrop then
+        uiFrame:SetBackdrop({
+            bgFile = "Interface/Tooltips/UI-Tooltip-Background",
+            edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+            tile = true, tileSize = 16, edgeSize = 16,
+            insets = { left = 3, right = 3, top = 3, bottom = 3 }
+        })
+        uiFrame:SetBackdropColor(0, 0, 0, 1)
+    end
 
     local title = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     title:SetPoint("TOP", 0, -12)
@@ -140,6 +142,7 @@ local function openConfig()
     uiFrame:Show()
 end
 
+SlashCmdList = SlashCmdList or {}
 SLASH_WI1 = "/wi"
 SlashCmdList["WI"] = function(msg)
     ensureDefaults()
