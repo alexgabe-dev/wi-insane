@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: |cffFFF468WI-INSANE Invite|r
 ## Notes: Auto-invite with configurable keywords and toggle
-## Version: 1.2
+## Version: 1.3
 ## SavedVariables: WI_Settings
 
 WI.lua

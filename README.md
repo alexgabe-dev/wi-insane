@@ -7,7 +7,7 @@ A lightweight, polished auto-invite addon for Turtle WoW that listens for config
 
 - Original code by Mazli
 - Modernised and maintained by Stabastian
-- Version: 1.2 (tested on Turtle WoW 1.18.0)
+- Version: 1.3 (tested on Turtle WoW 1.18.0)
 
 ---
 
