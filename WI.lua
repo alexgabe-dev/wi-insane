@@ -2,6 +2,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("VARIABLES_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("CHAT_MSG_WHISPER")
+frame:RegisterEvent("CHAT_MSG_GUILD")
 
 local function normalize(text)
     if not text then return "" end
@@ -20,6 +21,7 @@ local function ensureDefaults()
     if type(WI_Settings.minimap.show) ~= "boolean" then WI_Settings.minimap.show = true end
     if type(WI_Settings.minimap.angle) ~= "number" then WI_Settings.minimap.angle = 225 end
     if WI_Settings.debug == nil then WI_Settings.debug = false end
+    if WI_Settings.scanGuild == nil then WI_Settings.scanGuild = false end
 end
 
 local function hasKeyword(msg)
@@ -35,6 +37,7 @@ local uiFrame
 local infoFrame
 local keywordEditBox
 local enableCheckbox
+local guildCheckbox
 local keywordListText
 local keywordScroll
 local keywordScrollChild
@@ -46,6 +49,7 @@ local function refreshUI()
     if not uiFrame then return end
     local enabled = (WI_Settings and WI_Settings.enabled) and true or false
     if enableCheckbox then enableCheckbox:SetChecked(enabled) end
+    if guildCheckbox then guildCheckbox:SetChecked((WI_Settings and WI_Settings.scanGuild) and true or false) end
 
     local total = (WI_Settings and type(WI_Settings.keywords) == "table") and table.getn(WI_Settings.keywords) or 0
     local w = keywordScroll and (keywordScroll:GetWidth() - 24) or 200
@@ -154,6 +158,22 @@ local function createUI()
         GameTooltip:Show()
     end)
     enableCheckbox:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    guildCheckbox = CreateFrame("CheckButton", "WIGuildCheckbox", uiFrame, "UICheckButtonTemplate")
+    guildCheckbox:SetPoint("LEFT", enableCheckbox, "RIGHT", 140, 0)
+    guildCheckbox.text = getglobal(guildCheckbox:GetName() .. "Text")
+    guildCheckbox.text:SetText("Scan guild chat")
+    guildCheckbox:SetScript("OnClick", function()
+        WI_Settings.scanGuild = guildCheckbox:GetChecked() and true or false
+        refreshUI()
+    end)
+    guildCheckbox:SetScript("OnEnter", function()
+        GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Guild scanning", 1, 1, 1)
+        GameTooltip:AddLine("Invite when keyword appears in guild chat", 0.9, 0.9, 0.9)
+        GameTooltip:Show()
+    end)
+    guildCheckbox:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
     local label = uiFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     label:SetPoint("TOPLEFT", enableCheckbox, "BOTTOMLEFT", 0, -12)
@@ -524,8 +544,21 @@ local function eventHandler()
             SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
         end
     end
+    if event == "CHAT_MSG_GUILD" then
+        local message = arg1
+        local sender = arg2
+        local matched = hasKeyword(normalize(message))
+        if WI_Settings.debug then
+            DEFAULT_CHAT_FRAME:AddMessage("[WI] Guild from " .. tostring(sender or "?") .. ": '" .. tostring(message or "") .. "' matched=" .. tostring(matched) .. ", enabled=" .. tostring(WI_Settings.enabled) .. ", scanGuild=" .. tostring(WI_Settings.scanGuild))
+        end
+        if WI_Settings.enabled and WI_Settings.scanGuild and sender and matched then
+            if WI_Settings.debug then
+                DEFAULT_CHAT_FRAME:AddMessage("[WI] Invite attempt for " .. tostring(sender))
+            end
+            InviteByName(sender)
+            SendChatMessage("Inviting you to the party!", "WHISPER", nil, sender)
+        end
+    end
 end
 
 frame:SetScript("OnEvent", eventHandler)
-
-
