@@ -408,7 +408,7 @@ local function createUI()
     infoText:SetPoint("TOPLEFT", infoFrame, "TOPLEFT", 16, -48)
     infoText:SetJustifyH("LEFT")
     infoText:SetWidth(288)
-    infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (remix)
+    infoText:SetText([[|cffffd100Authors:|r |cffF48CBAMazli|r (original) • |cffFFF468Stabastian|r (remaster)
 
 |cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
 
