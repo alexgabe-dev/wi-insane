@@ -1,4 +1,4 @@
-# WI-INSANE
+# WI-INSANE AutoInvite
 
 A small auto‑invite helper for Turtle WoW. It watches whispers (and optionally Guild chat) for your keywords and invites.
 
