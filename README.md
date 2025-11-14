@@ -4,6 +4,11 @@ A small auto‑invite helper for Turtle WoW. It watches whispers (and optionally
 
 Version: 1.3 (Turtle WoW 1.18.0)
 
+
+
+<img width="337" height="317" alt="ss" src="https://github.com/user-attachments/assets/e890651c-2acb-44a5-9905-a3a9c4a55197" />
+
+
 ---
 
 ## Install
