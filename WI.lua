@@ -44,6 +44,7 @@ local keywordScrollChild
 local miniButton
 local keywordButtons = {}
 local selectedKeywordIndex
+local selectedKeywordMap = {}
 
 local function refreshUI()
     if not uiFrame then return end
@@ -85,15 +86,21 @@ local function refreshUI()
             b:ClearAllPoints()
             b:SetPoint("TOPLEFT", keywordScrollChild, "TOPLEFT", 0, -((i - 1) * rowH))
             b.text:SetText(i .. ". " .. tostring(kw or ""))
-            if selectedKeywordIndex == i then
+            if selectedKeywordIndex == i or selectedKeywordMap[i] then
                 b.text:SetTextColor(1, 0.82, 0) -- highlight selected in gold
             else
                 b.text:SetTextColor(1, 1, 1)
             end
             local idx = i
             b:SetScript("OnClick", function()
-                selectedKeywordIndex = idx
-                if keywordEditBox then keywordEditBox:SetText(WI_Settings.keywords[idx] or "") end
+                if IsShiftKeyDown() then
+                    if selectedKeywordMap[idx] then selectedKeywordMap[idx] = nil else selectedKeywordMap[idx] = true end
+                else
+                    selectedKeywordIndex = idx
+                    selectedKeywordMap = {}
+                    selectedKeywordMap[idx] = true
+                    if keywordEditBox then keywordEditBox:SetText(WI_Settings.keywords[idx] or "") end
+                end
                 refreshUI()
             end)
             b:Show()
@@ -129,10 +136,22 @@ local function createUI()
     uiFrame:SetFrameStrata("DIALOG")
     uiFrame:EnableMouse(true)
     uiFrame:SetMovable(true)
+    if uiFrame.EnableKeyboard then uiFrame:EnableKeyboard(true) end
     uiFrame:RegisterForDrag("LeftButton")
     uiFrame:SetScript("OnDragStart", function() this:StartMoving() end)
     uiFrame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
     uiFrame:Hide()
+
+    uiFrame:SetScript("OnKeyDown", function()
+        local key = arg1
+        if key == "DELETE" then
+            local list = {}
+            for i, v in pairs(selectedKeywordMap) do if v then table.insert(list, i) end end
+            table.sort(list, function(a,b) return a > b end)
+            for _, idx in ipairs(list) do table.remove(WI_Settings.keywords, idx) end
+            if table.getn(list) > 0 then selectedKeywordMap = {}; selectedKeywordIndex = nil; refreshUI() end
+        end
+    end)
 
     if uiFrame.SetBackdrop then
         uiFrame:SetBackdrop({
@@ -193,6 +212,39 @@ local function createUI()
     keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
     if keywordEditBox.SetAutoFocus then keywordEditBox:SetAutoFocus(false) end
+    keywordEditBox:SetScript("OnEnterPressed", function()
+        local kw = normalize(keywordEditBox:GetText())
+        if kw ~= "" then
+            local exists = false
+            for i = 1, table.getn(WI_Settings.keywords) do
+                local v = WI_Settings.keywords[i]
+                if normalize(v) == kw then exists = true; break end
+            end
+            if not exists then table.insert(WI_Settings.keywords, kw) end
+            keywordEditBox:SetText("")
+            refreshUI()
+        end
+    end)
+    keywordEditBox:SetScript("OnKeyDown", function()
+        local key = arg1
+        if key == "DELETE" then
+            local kw = normalize(keywordEditBox:GetText())
+            local removed = false
+            if kw ~= "" then
+                for i = table.getn(WI_Settings.keywords), 1, -1 do
+                    if normalize(WI_Settings.keywords[i]) == kw then table.remove(WI_Settings.keywords, i) removed = true end
+                end
+                if removed then keywordEditBox:SetText("") end
+                refreshUI()
+            else
+                local list = {}
+                for i, v in pairs(selectedKeywordMap) do if v then table.insert(list, i) end end
+                table.sort(list, function(a,b) return a > b end)
+                for _, idx in ipairs(list) do table.remove(WI_Settings.keywords, idx) end
+                if table.getn(list) > 0 then selectedKeywordMap = {}; selectedKeywordIndex = nil; refreshUI() end
+            end
+        end
+    end)
 
     local addButton = CreateFrame("Button", "WIAddButton", uiFrame, "UIPanelButtonTemplate")
     addButton:SetWidth(60); addButton:SetHeight(22)
@@ -224,13 +276,25 @@ local function createUI()
     removeButton:SetPoint("LEFT", addButton, "RIGHT", 8, 0)
     removeButton:SetText("Remove")
     removeButton:SetScript("OnClick", function()
-        local kw = normalize(keywordEditBox:GetText())
-        if kw ~= "" then
-            for i = table.getn(WI_Settings.keywords), 1, -1 do
-                if normalize(WI_Settings.keywords[i]) == kw then table.remove(WI_Settings.keywords, i) end
-            end
-            keywordEditBox:SetText("")
+        local anySel = false
+        for _, v in pairs(selectedKeywordMap) do if v then anySel = true; break end end
+        if anySel then
+            local list = {}
+            for i, v in pairs(selectedKeywordMap) do if v then table.insert(list, i) end end
+            table.sort(list, function(a,b) return a > b end)
+            for _, idx in ipairs(list) do table.remove(WI_Settings.keywords, idx) end
+            selectedKeywordMap = {}
+            selectedKeywordIndex = nil
             refreshUI()
+        else
+            local kw = normalize(keywordEditBox:GetText())
+            if kw ~= "" then
+                for i = table.getn(WI_Settings.keywords), 1, -1 do
+                    if normalize(WI_Settings.keywords[i]) == kw then table.remove(WI_Settings.keywords, i) end
+                end
+                keywordEditBox:SetText("")
+                refreshUI()
+            end
         end
     end)
     removeButton:SetScript("OnEnter", function()
