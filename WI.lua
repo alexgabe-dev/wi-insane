@@ -108,7 +108,17 @@ local function refreshUI()
         end
         keywordScrollChild:SetHeight(h)
     end
-    if keywordScroll then keywordScroll:UpdateScrollChildRect() end
+    if keywordScroll then
+        keywordScroll:UpdateScrollChildRect()
+        local r = keywordScroll:GetVerticalScrollRange()
+        if r <= 0 then
+            keywordScroll:SetVerticalScroll(0)
+        else
+            local c = keywordScroll:GetVerticalScroll()
+            if c < 0 then keywordScroll:SetVerticalScroll(0) end
+            if c > r then keywordScroll:SetVerticalScroll(r) end
+        end
+    end
 end
 
 local function createUI()
@@ -243,7 +253,11 @@ local function createUI()
     keywordScroll:SetScript("OnMouseWheel", function()
         local d = arg1
         local c = keywordScroll:GetVerticalScroll()
-        keywordScroll:SetVerticalScroll(c - d * 20)
+        local r = keywordScroll:GetVerticalScrollRange()
+        local n = c - d * 20
+        if n < 0 then n = 0 end
+        if n > r then n = r end
+        keywordScroll:SetVerticalScroll(n)
     end)
 
     keywordScrollChild = CreateFrame("Frame", "WIKeywordScrollChild", keywordScroll)
