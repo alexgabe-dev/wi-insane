@@ -106,9 +106,9 @@ local function refreshUI()
         if keywordScroll then
             if h < keywordScroll:GetHeight() then h = keywordScroll:GetHeight() end
         end
-        keywordScrollChild:SetHeight(h + 2)
+        keywordScrollChild:SetHeight(h)
     end
-    if keywordScroll then keywordScroll:SetVerticalScroll(0) end
+    if keywordScroll then keywordScroll:UpdateScrollChildRect() end
 end
 
 local function createUI()
@@ -239,6 +239,12 @@ local function createUI()
     keywordScroll:SetPoint("TOPLEFT", listLabel, "BOTTOMLEFT", 0, -8)
     keywordScroll:SetWidth(280)
     keywordScroll:SetHeight(110)
+    keywordScroll:EnableMouseWheel(true)
+    keywordScroll:SetScript("OnMouseWheel", function()
+        local d = arg1
+        local c = keywordScroll:GetVerticalScroll()
+        keywordScroll:SetVerticalScroll(c - d * 20)
+    end)
 
     keywordScrollChild = CreateFrame("Frame", "WIKeywordScrollChild", keywordScroll)
     keywordScrollChild:SetWidth(256)
@@ -322,7 +328,7 @@ local function createUI()
 
 |cffffd100Purpose:|r Invite helper that listens for configured whisper keywords and automatically invites eligible players.
 
-|cffffd100Version:|r 1.2  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
+|cffffd100Version:|r 1.3  |cffa0a0a0(tested in Turtle WoW 1.18.0)|r
 
 |cffffd100Commands:|r Use the |cff00ff00/wi help|r command to see all available commands.
 
