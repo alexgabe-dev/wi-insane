@@ -531,16 +531,18 @@ local function eventHandler()
         ensureDefaults()
         if not miniButton and Minimap then
             local btn = CreateFrame("Button", "WI_MinimapButton", Minimap)
-            btn:SetWidth(22)
-            btn:SetHeight(22)
+            btn:SetWidth(20)
+            btn:SetHeight(20)
             btn:SetFrameStrata("MEDIUM")
             btn:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
             local icon = btn:CreateTexture(nil, "ARTWORK")
-            icon:SetAllPoints(btn)
+            icon:SetPoint("CENTER", btn, "CENTER", 0, 0)
+            icon:SetWidth(20)
+            icon:SetHeight(20)
             -- Use custom addon icon (32x32 TGA with alpha)
             icon:SetTexture("Interface\\AddOns\\WI\\Icon\\wi-icon.tga")
             -- Crop to circular look (remove square corners)
-            icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+            icon:SetTexCoord(0.12, 0.88, 0.12, 0.88)
             btn.icon = icon
 
             -- Subtle background and classic brown ring frame
@@ -551,7 +553,9 @@ local function eventHandler()
 
             local border = btn:CreateTexture(nil, "OVERLAY")
             border:ClearAllPoints()
-            border:SetAllPoints(btn)
+            border:SetPoint("CENTER", btn, "CENTER", 0, 0)
+            border:SetWidth(52)
+            border:SetHeight(52)
             border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
             btn.border = border
 
