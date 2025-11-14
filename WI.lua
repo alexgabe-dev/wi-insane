@@ -141,9 +141,12 @@ local function createUI()
     uiFrame:SetScript("OnDragStart", function() this:StartMoving() end)
     uiFrame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
     uiFrame:Hide()
+    UISpecialFrames = UISpecialFrames or {}
+    table.insert(UISpecialFrames, "WIConfigFrame")
 
     uiFrame:SetScript("OnKeyDown", function()
         local key = arg1
+        if key == "ESCAPE" then uiFrame:Hide(); return end
         if key == "DELETE" then
             local list = {}
             for i, v in pairs(selectedKeywordMap) do if v then table.insert(list, i) end end
@@ -212,6 +215,7 @@ local function createUI()
     keywordEditBox:SetWidth(180); keywordEditBox:SetHeight(20)
     keywordEditBox:SetPoint("TOPLEFT", label, "BOTTOMLEFT", 0, -6)
     if keywordEditBox.SetAutoFocus then keywordEditBox:SetAutoFocus(false) end
+    keywordEditBox:SetScript("OnEscapePressed", function() uiFrame:Hide() end)
     keywordEditBox:SetScript("OnEnterPressed", function()
         local kw = normalize(keywordEditBox:GetText())
         if kw ~= "" then
@@ -377,6 +381,8 @@ local function createUI()
     infoFrame:SetScript("OnDragStart", function() this:StartMoving() end)
     infoFrame:SetScript("OnDragStop", function() this:StopMovingOrSizing() end)
     infoFrame:Hide()
+    UISpecialFrames = UISpecialFrames or {}
+    table.insert(UISpecialFrames, "WIInfoFrame")
 
     if infoFrame.SetBackdrop then
         infoFrame:SetBackdrop({
@@ -525,16 +531,18 @@ local function eventHandler()
         ensureDefaults()
         if not miniButton and Minimap then
             local btn = CreateFrame("Button", "WI_MinimapButton", Minimap)
-            btn:SetWidth(22)
-            btn:SetHeight(22)
+            btn:SetWidth(32)
+            btn:SetHeight(32)
             btn:SetFrameStrata("MEDIUM")
             btn:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
             local icon = btn:CreateTexture(nil, "ARTWORK")
-            icon:SetAllPoints(btn)
+            icon:SetPoint("CENTER", btn, "CENTER", 0, 0)
+            icon:SetWidth(26)
+            icon:SetHeight(26)
             -- Use custom addon icon (32x32 TGA with alpha)
             icon:SetTexture("Interface\\AddOns\\WI\\Icon\\wi-icon.tga")
             -- Crop to circular look (remove square corners)
-            icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+            icon:SetTexCoord(0.12, 0.88, 0.12, 0.88)
             btn.icon = icon
 
             -- Subtle background and classic brown ring frame
@@ -545,8 +553,8 @@ local function eventHandler()
 
             local border = btn:CreateTexture(nil, "OVERLAY")
             border:SetPoint("CENTER", btn, "CENTER", 0, 0)
-            border:SetWidth(26)
-            border:SetHeight(26)
+            border:SetWidth(36)
+            border:SetHeight(36)
             border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
             btn.border = border
 
