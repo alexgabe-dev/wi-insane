@@ -553,9 +553,9 @@ local function eventHandler()
 
             local border = btn:CreateTexture(nil, "OVERLAY")
             border:ClearAllPoints()
-            border:SetPoint("CENTER", btn, "CENTER", 0, 0)
-            border:SetWidth(52)
-            border:SetHeight(52)
+            border:SetPoint("TOPLEFT", btn, "TOPLEFT", -8, 8)
+            border:SetWidth(54)
+            border:SetHeight(54)
             border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
             btn.border = border
 
