@@ -202,7 +202,7 @@ local function createUI()
     guildCheckbox:SetScript("OnEnter", function()
         GameTooltip:SetOwner(this, "ANCHOR_RIGHT")
         GameTooltip:SetText("Guild scanning", 1, 1, 1)
-        GameTooltip:AddLine("Invite when keyword appears in guild chat", 0.9, 0.9, 0.9)
+        GameTooltip:AddLine("Only when you are party/raid leader", 0.9, 0.9, 0.9)
         GameTooltip:Show()
     end)
     guildCheckbox:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -645,6 +645,11 @@ local function eventHandler()
             DEFAULT_CHAT_FRAME:AddMessage("[WI] Guild from " .. tostring(sender or "?") .. ": '" .. tostring(message or "") .. "' matched=" .. tostring(matched) .. ", enabled=" .. tostring(WI_Settings.enabled) .. ", scanGuild=" .. tostring(WI_Settings.scanGuild))
         end
         if WI_Settings.enabled and WI_Settings.scanGuild and sender and matched then
+            local isLeader = (IsPartyLeader and IsPartyLeader()) or (IsRaidLeader and IsRaidLeader())
+            if not isLeader then
+                if WI_Settings.debug then DEFAULT_CHAT_FRAME:AddMessage("[WI] Guild match ignored: not group leader") end
+                return
+            end
             if WI_Settings.debug then
                 DEFAULT_CHAT_FRAME:AddMessage("[WI] Invite attempt for " .. tostring(sender))
             end
