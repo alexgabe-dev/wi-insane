@@ -645,7 +645,16 @@ local function eventHandler()
             DEFAULT_CHAT_FRAME:AddMessage("[WI] Guild from " .. tostring(sender or "?") .. ": '" .. tostring(message or "") .. "' matched=" .. tostring(matched) .. ", enabled=" .. tostring(WI_Settings.enabled) .. ", scanGuild=" .. tostring(WI_Settings.scanGuild))
         end
         if WI_Settings.enabled and WI_Settings.scanGuild and sender and matched then
-            local isLeader = (IsPartyLeader and IsPartyLeader()) or (IsRaidLeader and IsRaidLeader())
+            local raidCount = (GetNumRaidMembers and GetNumRaidMembers()) or 0
+            local partyCount = (GetNumPartyMembers and GetNumPartyMembers()) or 0
+            local isLeader = false
+            if raidCount and raidCount > 0 then
+                isLeader = (IsRaidLeader and IsRaidLeader()) and true or false
+            elseif partyCount and partyCount > 0 then
+                isLeader = (IsPartyLeader and IsPartyLeader()) and true or false
+            else
+                isLeader = false
+            end
             if not isLeader then
                 if WI_Settings.debug then DEFAULT_CHAT_FRAME:AddMessage("[WI] Guild match ignored: not group leader") end
                 return
